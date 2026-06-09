@@ -85,7 +85,7 @@ export const useUserStore = defineStore('user', () => {
       }
 
       console.log('Token found, fetching user data')
-      const response = await fetch(`${API_URL}/user`, {
+      const response = await fetch(`${API_URL}/api/user`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
