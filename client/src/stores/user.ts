@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import Cookies from 'js-cookie'
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+const API_URL = import.meta.env.VITE_API_URL + '/api'|| "http://localhost:8000/api";
 
 export const useUserStore = defineStore('user', () => {
   const user = ref<any>(null)
