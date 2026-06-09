@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
         DB::table('contents')->truncate();
         DB::table('users')->truncate();
         DB::table('roles')->truncate();
-        DB::table('sessions')->truncate();
         DB::table('personal_access_tokens')->truncate();
 
 
