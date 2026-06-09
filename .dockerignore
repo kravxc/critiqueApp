@@ -1,0 +1,17 @@
+.git
+.gitignore
+README.md
+.env
+.env.*
+*.md
+.gitattributes
+.vscode
+.idea
+.DS_Store
+node_modules
+vendor
+storage
+*.log
+*.sql
+*.sql.gz
+backup*

@@ -1,0 +1,641 @@
+.register {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl) 0;
+
+  &__background {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.5);
+    }
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+                    135deg,
+                    rgba(var(--color-bg-primary-rgb), 0.95) 0%,
+                    rgba(var(--color-bg-primary-rgb), 0.8) 100%
+    );
+  }
+
+  &__container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 500px;
+    padding: 0 var(--space-md);
+  }
+
+  &__card {
+    background: var(--color-bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+  }
+
+  &__logo {
+    display: inline-block;
+    font-size: var(--font-size-2xl);
+    font-weight: 800;
+    text-decoration: none;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-md);
+  }
+
+  &__title {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    margin-bottom: var(--space-xs);
+    color: var(--color-text-primary);
+  }
+
+  &__subtitle {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  &__form {
+    margin-bottom: var(--space-xl);
+  }
+
+  // Разделитель
+  &__divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin: var(--space-xl) 0;
+
+    &-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border-color-strong);
+    }
+
+    &-text {
+      color: var(--color-text-tertiary);
+      font-size: var(--font-size-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  // Социальные кнопки
+  &__social {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+    }
+  }
+
+  &__footer {
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: var(--space-lg);
+  }
+
+  &__login {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  &__submit {
+    width: 100%;
+    margin-top: var(--space-lg);
+    position: relative;
+    overflow: hidden;
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Социальные кнопки
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--border-color-strong);
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+    z-index: 0;
+  }
+
+  &__icon {
+    width: 24px;
+    height: 24px;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease;
+  }
+
+  &__text {
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease;
+
+    @media (max-width: 480px) {
+      font-size: var(--font-size-sm);
+    }
+  }
+
+  &--google {
+    &:hover:not(:disabled) {
+      border-color: #DB4437;
+      color: #DB4437;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(219, 68, 55, 0.3);
+
+      &::before {
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(219, 68, 55, 0.15) 0%, transparent 70%);
+      }
+
+      .social-btn__icon {
+        transform: scale(1.1) rotate(-5deg);
+      }
+    }
+  }
+
+  &--github {
+    &:hover:not(:disabled) {
+      border-color: #ffffff;
+      color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.05);
+
+      &::before {
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+      }
+
+      .social-btn__icon {
+        transform: scale(1.1) rotate(5deg);
+      }
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+}
+
+// Прогресс бар
+.progress-bar {
+  margin-bottom: var(--space-xl);
+
+  &__line {
+    height: 4px;
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-full);
+    position: relative;
+    overflow: hidden;
+  }
+
+  &__line-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-accent-light));
+    border-radius: var(--radius-full);
+    transition: width 0.3s ease;
+  }
+}
+
+.form-group {
+  margin-bottom: var(--space-lg);
+  position: relative;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-xs);
+
+  &__required {
+    color: var(--color-error);
+    margin-left: 2px;
+  }
+}
+
+.form-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--color-accent);
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+  transition: var(--transition-base);
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), 0.1);
+  }
+
+  &--valid {
+    border-color: var(--color-success);
+  }
+
+  &--error {
+    border-color: var(--color-error);
+  }
+}
+
+.form-error {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--color-error);
+  margin-top: var(--space-xs);
+}
+
+// Поле пароля
+.password-input-wrapper {
+  position: relative;
+
+  .form-input {
+    padding-right: 40px;
+  }
+}
+
+.password-toggle {
+  position: absolute;
+  right: var(--space-sm);
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: var(--space-xs);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+// Индикатор силы пароля
+.password-strength {
+  margin-top: var(--space-xs);
+}
+
+.strength-bars {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.strength-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-full);
+  transition: all 0.3s ease;
+
+  &--weak {
+    background: var(--color-error);
+  }
+
+  &--medium {
+    background: var(--color-warning);
+  }
+
+  &--strong {
+    background: var(--color-success);
+  }
+}
+
+.strength-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+// Чекбокс
+.terms-group {
+  margin-top: var(--space-lg);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  cursor: pointer;
+}
+
+.checkbox-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+
+  &:checked + .checkbox-custom {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+
+    &::after {
+      opacity: 1;
+    }
+  }
+}
+
+.checkbox-custom {
+  position: relative;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-base);
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 10px;
+    height: 10px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M20 6L9 17l-5-5'%3E%3C/path%3E%3C/svg%3E");
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+}
+
+.checkbox-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+
+  .form-label__required {
+    margin-left: 2px;
+  }
+}
+
+.terms-link {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 600;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Уведомление об успешной авторизации
+.success-notification {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: linear-gradient(135deg, var(--color-success), #059669);
+  border-radius: var(--radius-lg);
+  margin-top: var(--space-lg);
+  color: white;
+  box-shadow: 0 10px 30px -10px var(--color-success);
+  animation: slideIn 0.5s ease;
+
+  &__icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  &__content {
+    flex: 1;
+  }
+
+  &__title {
+    font-size: var(--font-size-md);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  &__message {
+    font-size: var(--font-size-sm);
+    opacity: 0.9;
+    line-height: 1.5;
+    margin-bottom: 4px;
+
+    strong {
+      font-weight: 700;
+      color: white;
+    }
+  }
+}
+
+// Ошибка сервера
+.server-error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: rgba(var(--color-error-rgb), 0.1);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-md);
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-lg);
+
+  svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// Спиннер загрузки
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+
+  &--small {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+  }
+}
+
+// Логин ссылка
+.login-link {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 600;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Анимации
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-fade-enter-active {
+  transition: all 0.5s ease;
+}
+
+.slide-fade-enter-from {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.slide-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-30px);
+}
+
+// Адаптив
+@media (max-width: 768px) {
+  .register {
+    padding: var(--space-lg) 0;
+
+    &__card {
+      padding: var(--space-lg);
+    }
+  }
+
+  .success-notification {
+    padding: var(--space-sm) var(--space-md);
+
+    &__icon {
+      width: 32px;
+      height: 32px;
+
+      svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    &__title {
+      font-size: var(--font-size-sm);
+    }
+
+    &__message {
+      font-size: var(--font-size-xs);
+    }
+  }
+}
+
+// Светлая тема
+.light-theme {
+  .social-btn {
+    &--github {
+      &:hover:not(:disabled) {
+        border-color: #24292e;
+        color: #24292e;
+        background: rgba(36, 41, 46, 0.05);
+        box-shadow: 0 5px 15px rgba(36, 41, 46, 0.3);
+
+        &::before {
+          background: radial-gradient(circle, rgba(36, 41, 46, 0.15) 0%, transparent 70%);
+        }
+      }
+    }
+  }
+
+  .success-notification {
+    background: linear-gradient(135deg, var(--color-success), #10b981);
+  }
+}

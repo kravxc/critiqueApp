@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+.env.*
+*.log
+.git
+.idea
+.vscode
+.DS_Store
+*.sql
+*.sql.gz
+README.md
+*.md
+tests/
+__tests__/
+coverage/

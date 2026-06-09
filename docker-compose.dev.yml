@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: laravel_mysql_dev
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: critique
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data_dev:/var/lib/mysql
+      - ./docker/mysql/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql
+    networks:
+      - app-network
+    command: --init-file /docker-entrypoint-initdb.d/01-init.sql
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    container_name: laravel_server_dev
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./server:/var/www/server
+    environment:
+      DB_HOST: mysql
+      DB_DATABASE: critique
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      APP_ENV: local
+      APP_DEBUG: true
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    container_name: vue_client_dev
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    environment:
+      VITE_API_URL: http://localhost:8000
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql_data_dev:
