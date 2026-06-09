@@ -241,7 +241,7 @@ const fetchPopularReviews = async () => {
   error.value = null;
 
   try {
-    const response = await fetch(`${API_URL}/api/reviews/popular`, {
+    const response = await fetch(`${API_URL}/reviews/popular`, {
       method: "GET",
       headers: {
         Accept: "application/json",
