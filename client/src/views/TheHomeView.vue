@@ -179,7 +179,7 @@ const ctaSection = ref<HTMLElement | null>(null)
 
 const heroImage = 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?q=80&w=2070&auto=format&fit=crop'
 
-const API_URL = 'http://127.0.0.1:8000/api'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
 
 const displayedReviews = computed(() => {
   return reviews.value.slice(0, 6)

@@ -325,9 +325,9 @@ const isFiltersDefault = computed(() => {
 
 let searchTimeout: ReturnType<typeof setTimeout>
 
-const API_URL = 'http://127.0.0.1:8000/api'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
 
-// Функция для загрузки актуального количества рецензий для каждого релиза
+
 const fetchReviewsCountForContent = async (contentId: number): Promise<number> => {
   try {
     const response = await fetch(`${API_URL}/contents/${contentId}`, {

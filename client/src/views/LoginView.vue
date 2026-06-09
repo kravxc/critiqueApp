@@ -163,7 +163,7 @@ const serverError = ref('')
 const isSocialLoading = ref(false)
 const socialProvider = ref<'google' | 'github' | null>(null)
 
-const API_URL = 'http://127.0.0.1:8000/api'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
 
 const validateField = (field: string) => {
   switch (field) {

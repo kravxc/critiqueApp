@@ -496,7 +496,7 @@ const reviewToDelete = ref<Review | null>(null)
 const likeLoading = ref<Record<string, boolean>>({})
 const favoriteLoading = ref(false)
 
-const API_URL = 'http://127.0.0.1:8000/api'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
 const ASSETS_URL = 'https://critiqueassets.storage.yandexcloud.net/'
 
 const user = computed(() => userStore.user)
