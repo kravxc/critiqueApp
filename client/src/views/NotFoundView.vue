@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-const bgImage = 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=2070&auto=format&fit=crop'
+import bgImage from '../../public/404.jpeg'
 </script>
 
 <style lang="scss" src="@/assets/styles/notFound.scss" scoped>

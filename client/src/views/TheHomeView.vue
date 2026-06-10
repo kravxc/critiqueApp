@@ -199,6 +199,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
+import heroImage from '../../public/hero-home.jpeg'
 
 interface Review {
   id: number;
@@ -226,8 +227,6 @@ const reviewsSection = ref<HTMLElement | null>(null);
 const featuresSection = ref<HTMLElement | null>(null);
 const ctaSection = ref<HTMLElement | null>(null);
 
-const heroImage =
-  "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?q=80&w=2070&auto=format&fit=crop";
 
 const API_URL =
   import.meta.env.VITE_API_URL + "/api" || "http://localhost:8000/api";
