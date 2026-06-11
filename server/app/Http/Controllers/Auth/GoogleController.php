@@ -21,10 +21,7 @@ class GoogleController extends Controller
 
             Cache::put('google_oauth_state_' . $state, true, 600);
 
-            $redirectUri = config('services.google.redirect');
-
             $redirectUrl = Socialite::driver('google')
-                ->redirectUrl($redirectUri)  
                 ->stateless()
                 ->redirect()
                 ->getTargetUrl();
@@ -34,7 +31,7 @@ class GoogleController extends Controller
             }
 
             return response()->json([
-                'redirect_uri' => $redirectUrl,
+                'redirect_url' => $redirectUrl,
                 'state' => $state,
             ]);
 
