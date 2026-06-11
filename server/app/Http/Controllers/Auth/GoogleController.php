@@ -23,12 +23,9 @@ class GoogleController extends Controller
 
             $redirectUrl = Socialite::driver('google')
                 ->stateless()
+                ->with(['state' => $state])  
                 ->redirect()
                 ->getTargetUrl();
-
-            if (strpos($redirectUrl, 'state=') === false) {
-                $redirectUrl .= '&state=' . $state;
-            }
 
             return response()->json([
                 'redirect_url' => $redirectUrl,
