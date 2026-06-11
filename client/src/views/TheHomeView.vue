@@ -18,10 +18,10 @@
         </p>
 
         <div class="hero__actions" :style="{ transitionDelay: '400ms' }">
-          <router-link to="/reviews" class="btn btn--primary">
+          <router-link to="/contents" class="btn btn--primary">
             Читать рецензии
           </router-link>
-          <router-link to="/write" class="btn btn--outline">
+          <router-link to="/contents" class="btn btn--outline">
             Написать свою
           </router-link>
         </div>
@@ -187,7 +187,7 @@
         <div class="cta__content">
           <h2>Готовы поделиться мнением?</h2>
           <p>Присоединяйтесь к тысячам меломанов уже сегодня</p>
-          <router-link to="/write" class="btn btn--primary btn--large">
+          <router-link to="/contents" class="btn btn--primary btn--large">
             Начать писать
           </router-link>
         </div>
