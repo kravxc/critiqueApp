@@ -9,6 +9,12 @@ use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/auth/github', [GitHubController::class, 'redirect'])->name('auth.github');
+Route::get('auth/github/callback', [GitHubController::class, 'callback']);
+
+Route::get('auth/google', [GoogleController::class, 'redirect'])->name('google.redirect');
+Route::get('auth/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -21,11 +27,7 @@ Route::get('contents', [ContentsController::class, 'index']);
 
 Route::get('reviews/popular', [ReviewsController::class, 'popularReviews']);
 
-Route::get('/auth/github', [GitHubController::class, 'redirect'])->name('auth.github');
-Route::get('auth/github/callback', [GitHubController::class, 'callback']);
 
-Route::get('auth/google', [GoogleController::class, 'redirect'])->name('google.redirect');
-Route::get('auth/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
 Route::post('/userinfo', [GoogleController::class, 'getUserInfo'])->name('google.userinfo');
 
 Route::post('/contents/search', [ContentsController::class, 'search'])->name('contents.search');

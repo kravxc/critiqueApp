@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\GoogleCallbackRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,115 +16,91 @@ class GoogleController extends Controller
 {
     public function redirect(): JsonResponse
     {
-        $state = bin2hex(random_bytes(16));
-
-        cache()->put('google_state_' . $state, true, 600);
-
-        $url = Socialite::driver('google')
-            ->scopes(['openid', 'profile', 'email'])
-            ->with(['state' => $state])
-            ->stateless()
-            ->redirect()
-            ->getTargetUrl();
-
-        return response()->json([
-            'success' => true,
-            'redirect_url' => $url,
-            'state' => $state,
-        ]);
-    }
-
-    public function callback(GoogleCallbackRequest $request)
-    {
         try {
-            $state = $request->input('state');
+            $state = bin2hex(random_bytes(16));
 
-            if (!Cache::get('google_state_' . $state)) {
-                $frontendUrl = config('app.frontend_url', 'http://localhost:5173');
-                return redirect()->away($frontendUrl . '/auth/google/callback?error=invalid_state&message=' . urlencode('Invalid state parameter'));
-            }
+            Cache::put('google_oauth_state_' . $state, true, 600);
 
-            Cache::forget('google_state_' . $state);
-
-            $googleUser = Socialite::driver('google')
+            $redirectUrl = Socialite::driver('google')
                 ->stateless()
-                ->user();
+                ->redirect()
+                ->getTargetUrl();
 
-            $bindToken = $request->input('bind_token');
-
-            if (!$bindToken && $request->has('state')) {
-                $stateParams = json_decode(base64_decode($request->state), true);
-                $bindToken = $stateParams['bind_token'] ?? null;
+            if (strpos($redirectUrl, 'state=') === false) {
+                $redirectUrl .= '&state=' . $state;
             }
 
-            if ($bindToken) {
-                return $this->handleBinding($googleUser, $bindToken);
-            }
-
-            return $this->handleLoginOrRegister($googleUser);
-
-        } catch (\Exception $e) {
-            Log::error('Google OAuth Error: ' . $e->getMessage(), [
-                'exception' => $e,
-                'request' => $request->all(),
+            return response()->json([
+                'success' => true,
+                'redirect_url' => $redirectUrl,
+                'state' => $state,
             ]);
 
-            $frontendUrl = config('app.frontend_url', 'http://localhost:5173');
-            return redirect()->away($frontendUrl . '/auth/google/callback?error=google_auth_error&message=' . urlencode($e->getMessage()));
+        } catch (\Exception $e) {
+            Log::error('Google redirect error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to initialize Google login'
+            ], 500);
         }
     }
 
-    private function handleBinding($googleUser, string $bindToken)
+    public function callback(Request $request)
     {
         $frontendUrl = config('app.frontend_url', 'http://localhost:5173');
 
         try {
-            $personalAccessToken = \Laravel\Sanctum\PersonalAccessToken::findToken($bindToken);
+            if ($request->has('error')) {
+                $error = $request->input('error');
+                $errorDescription = $request->input('error_description', 'Unknown error');
 
-            if (!$personalAccessToken) {
-                return redirect()->away($frontendUrl . '/auth/google/callback?error=user_not_found&message=' . urlencode('Пользователь не найден'));
+                Log::warning('Google OAuth error callback', [
+                    'error' => $error,
+                    'description' => $errorDescription
+                ]);
+
+                return redirect()->away(
+                    $frontendUrl . '/auth/google/callback?error=' . urlencode($error) .
+                    '&message=' . urlencode($errorDescription)
+                );
             }
 
-            $user = $personalAccessToken->tokenable;
+            $state = $request->input('state');
+            $cacheKey = 'google_oauth_state_' . $state;
 
-            $existingUser = User::where('google_id', $googleUser->getId())->first();
-            if ($existingUser && $existingUser->id !== $user->id) {
-                return redirect()->away($frontendUrl . '/auth/google/callback?error=google_already_bound&message=' . urlencode('Этот Google аккаунт уже привязан к другому пользователю'));
+            if (!$state || !Cache::get($cacheKey)) {
+                Log::warning('Invalid or expired state parameter', ['state' => $state]);
+                return redirect()->away(
+                    $frontendUrl . '/auth/google/callback?error=invalid_state&message=' .
+                    urlencode('Security validation failed. Please try again.')
+                );
             }
 
-            $user->update([
-                'google_id' => $googleUser->getId(),
-                'google_token' => $googleUser->token,
-                'google_refresh_token' => $googleUser->refreshToken,
-                'avatar' => $googleUser->getAvatar() ?: $user->avatar,
-            ]);
+            Cache::forget($cacheKey);
 
-            $newToken = $user->createToken('auth-token')->plainTextToken;
+            $googleUser = Socialite::driver('google')->stateless()->user();
 
-            $userData = [
-                'id' => (string) $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'avatar_url' => $user->avatar,
-                'google_id' => (string) $user->google_id,
-                'token' => $newToken,
-                'is_bind' => true,
-                'message' => 'Google аккаунт успешно привязан'
-            ];
+            if (!$googleUser || !$googleUser->getEmail()) {
+                throw new \Exception('Could not retrieve user information from Google');
+            }
 
-            $encodedData = urlencode(json_encode($userData));
-            return redirect()->away($frontendUrl . '/auth/google/callback?data=' . $encodedData);
+            return $this->handleLoginOrRegister($googleUser, $frontendUrl);
 
         } catch (\Exception $e) {
-            Log::error('Google bind error: ' . $e->getMessage());
-            return redirect()->away($frontendUrl . '/auth/google/callback?error=bind_error&message=' . urlencode('Ошибка при привязке аккаунта'));
+            Log::error('Google OAuth callback error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'request_params' => $request->except('code')
+            ]);
+
+            return redirect()->away(
+                $frontendUrl . '/auth/google/callback?error=auth_error&message=' .
+                urlencode('Authentication failed: ' . $e->getMessage())
+            );
         }
     }
 
-    private function handleLoginOrRegister($googleUser)
+    private function handleLoginOrRegister($googleUser, string $frontendUrl)
     {
-        $frontendUrl = config('app.frontend_url', 'http://localhost:5173');
-
         try {
             $user = User::where('google_id', $googleUser->getId())->first();
 
@@ -143,13 +118,13 @@ class GoogleController extends Controller
                     $user = User::create([
                         'name' => $this->getUserName($googleUser),
                         'email' => $googleUser->getEmail(),
-                        'password' => bcrypt(Str::random(16)),
+                        'password' => bcrypt(Str::random(32)),
                         'google_id' => $googleUser->getId(),
                         'google_token' => $googleUser->token,
                         'google_refresh_token' => $googleUser->refreshToken,
                         'avatar' => $googleUser->getAvatar(),
                         'email_verified_at' => now(),
-                        'role_id' => 2,
+                        'role_id' => 2, // обычный пользователь
                     ]);
                 }
             } else {
@@ -169,15 +144,22 @@ class GoogleController extends Controller
                 'avatar_url' => $user->avatar,
                 'google_id' => (string) $user->google_id,
                 'token' => $token,
-                'is_bind' => false
+                'is_bind' => false,
             ];
 
             $encodedData = urlencode(json_encode($userData));
-            return redirect()->away($frontendUrl . '/auth/google/callback?data=' . $encodedData);
+            $callbackUrl = $frontendUrl . '/auth/google/callback?data=' . $encodedData;
+
+            Log::info('Google OAuth success', ['user_id' => $user->id, 'email' => $user->email]);
+
+            return redirect()->away($callbackUrl);
 
         } catch (\Exception $e) {
-            Log::error('Google login/register error: ' . $e->getMessage());
-            return redirect()->away($frontendUrl . '/auth/google/callback?error=login_error&message=' . urlencode('Ошибка при входе через Google'));
+            Log::error('Google user handling error: ' . $e->getMessage());
+            return redirect()->away(
+                $frontendUrl . '/auth/google/callback?error=user_error&message=' .
+                urlencode('Error processing user data')
+            );
         }
     }
 
@@ -187,10 +169,12 @@ class GoogleController extends Controller
         if (!empty($name)) {
             return $name;
         }
+
         $email = $googleUser->getEmail();
         if (!empty($email)) {
             return explode('@', $email)[0];
         }
+
         return 'User_' . Str::random(8);
     }
 }
