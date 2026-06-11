@@ -34,7 +34,7 @@ class GoogleController extends Controller
             }
 
             return response()->json([
-                'redirect_url' => $redirectUrl,
+                'redirect_uri' => $redirectUrl,
                 'state' => $state,
             ]);
 
